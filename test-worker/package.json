@@ -1,17 +1,17 @@
 {
-	"name": "cloudly-hook",
-	"version": "0.0.1",
-	"description": "Library to handle webhooks in Cloudflare Workers.",
+	"name": "cloudly-hook-test-worker",
+	"version": "0.0.0",
+	"description": "Test worker for cloudly-hook.",
 	"author": "Utily Contributors",
 	"license": "MIT",
+	"private": true,
 	"repository": "https://github.com/utily/cloudly-hook",
 	"bugs": {
 		"url": "https://github.com/utily/cloudly-hook/issues"
 	},
 	"homepage": "https://github.com/utily",
-	"private": false,
-	"main": "dist/index.js",
-	"typings": "dist/index.d.ts",
+	"main": "dist/_worker.mjs",
+	"typings": "dist/_worker.d.ts",
 	"type": "module",
 	"git": {
 		"tagName": "v${version}"
@@ -29,14 +29,13 @@
 			"^.+\\.(j|t)sx?$": "ts-jest"
 		},
 		"transformIgnorePatterns": [
-			"<rootDir>/node_modules/(?!(cryptly|authly|isoly|gracely|cloudly-http|cloudly-router|cloudly-storage)/.*)"
+			"<rootDir>/node_modules/(?!(cryptly|authly|isoly|gracely|cloudly-http|cloudly-router|cloudly-formdata)/.*)"
 		],
 		"testEnvironment": "node",
 		"testRegex": "((\\.|/)(test|spec))(\\.|\\/.+)(jsx?|tsx?)$",
 		"testPathIgnorePatterns": [
 			"node_modules/",
-			"dist/",
-			"test-worker/"
+			"dist/"
 		],
 		"collectCoverageFrom": [
 			"**/*.{ts,tsx,js,jsx}",
@@ -49,14 +48,24 @@
 	"scripts": {
 		"lint": "eslint --max-warnings=0 '**/*.{ts,tsx}'",
 		"fix": "eslint '**/*.{ts,tsx}' --fix",
-		"build": "tsc -p .",
-		"jest": "jest",
-		"test": "cd test-worker/ && npm i && npm run test && cd .. && jest",
-		"prepare": "npm run build",
-		"clean": "rimraf dist node_modules coverage",
-		"start": "npm --prefix test-worker run start"
+		"build": "rollup -c",
+		"build:local": "rollup --config rollup.dev.config.js",
+		"dev": "NODE_ENV=development npm run build",
+		"test": "jest",
+		"transpile": "tsc --project tsconfig.test.json",
+		"deploy": "wrangler login && wrangler publish; wrangler logout",
+		"login": "wrangler login",
+		"start": "(rollup --config rollup.dev.config.js --watch) & (node --experimental-vm-modules --inspect ./node_modules/miniflare/dist/src/cli.js dist/_worker.mjs --wrangler-env miniflare --watch --live-reload -B 'while [ ! -f dist/_worker.mjs ]; do sleep 0.1; done' && kill $!)",
+		"start:wrangler": "wrangler dev --env wrangler",
+		"clean": "rimraf dist node_modules coverage"
 	},
 	"devDependencies": {
+		"wrangler": "^2.0.7",
+		"@cloudflare/workers-types": "^3.14.1",
+		"@rollup/plugin-commonjs": "^22.0.1",
+		"@rollup/plugin-json": "^4.1.0",
+		"@rollup/plugin-node-resolve": "^13.3.0",
+		"@rollup/plugin-typescript": "^8.3.3",
 		"@types/jest": "^28.1.6",
 		"@typescript-eslint/eslint-plugin": "5.31.0",
 		"@typescript-eslint/parser": "5.31.0",
@@ -64,17 +73,21 @@
 		"eslint-plugin-prettierx": "github:utily/eslint-plugin-prettierx#utily-20220323",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
 		"jest": "^28.1.3",
+		"miniflare": "^2.6.0",
 		"prettierx": "github:utily/prettierx#utily-20220323",
 		"rimraf": "^3.0.2",
+		"rollup": "^2.77.2",
+		"rollup-plugin-copy": "^3.4.0",
+		"rollup-plugin-terser": "^7.0.2",
 		"ts-jest": "^28.0.7",
+		"tslib": "^2.4.0",
 		"typescript": "^4.7.4"
 	},
 	"dependencies": {
+		"authly": "^2.0.1",
 		"cloudly-http": "^0.0.50",
 		"cloudly-router": "^0.0.24",
-		"cloudly-storage": "^0.4.4",
-		"cryptly": "^3.0.1",
-		"gracely": "^2.0.3",
-		"isoly": "^2.0.11"
+		"cloudly-hook": "file:..",
+		"gracely": "^2.0.3"
 	}
 }

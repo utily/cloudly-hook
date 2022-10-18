@@ -1,0 +1,32 @@
+compatibility_date = "2021-10-21"
+type = "javascript"
+name = "worker-template"
+account_id = "abcdefg01234567890"
+zone_id = "abcdefg01234567890"
+workers_dev = true
+routes = ["https://example.com/item*"]
+vars = { }
+port = 8787
+
+[build]
+command = "npm install && npm run build:local"
+
+[build.upload]
+format = "modules"
+dir = "dist"
+main = "./_worker.mjs"
+
+[env.wrangler]
+workers_dev = true
+account_id = "abcdefg01234567890"
+vars = {  }
+
+[env.miniflare]
+vars = { }
+durable_objects.bindings = [
+
+]
+
+[miniflare]
+durable_objects_persist = "./.miniflare/durable-objects/"
+kv_persist = "./.miniflare/kv/"
