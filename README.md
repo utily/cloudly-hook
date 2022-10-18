@@ -1,2 +1,2 @@
-# library-template
-Template for Typescript library.
+# Cloudly Hook
+Library for handling asynchronous webhooks in Cloudaflare Workers.
