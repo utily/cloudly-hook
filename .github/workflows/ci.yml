@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: current
+          cache: 'npm'
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: node_modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - run: npm install
+      - run: npm run build
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: current
+          cache: 'npm'
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: node_modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - run: npm install
+      - run: npm run test
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: current
+          cache: 'npm'
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: node_modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - run: npm install
+      - run: npm run lint
+  audit:
+    name: Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: current
+          cache: 'npm'
+      - run: npm audit

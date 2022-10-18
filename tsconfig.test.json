@@ -1,0 +1,35 @@
+{
+	"compilerOptions": {
+		"target": "es2021",
+		"module": "es2020",
+		"lib": [
+			"es2021",
+			"webworker"
+		],
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"noImplicitAny": true,
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitThis": true,
+		"strictNullChecks": true,
+		"sourceMap": true,
+		"outDir": "dist",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"paths": {
+			"*": [
+				"types/*"
+			]
+		},
+		"types": ["jest"]
+	},
+	"files": [
+		"index.ts"
+	],
+	"typeAcquisition": {
+		"enable": true
+	}
+}
