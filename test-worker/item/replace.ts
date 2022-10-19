@@ -14,8 +14,12 @@ export async function replace(request: http.Request, context: Context): Promise<
 		result = gracely.client.invalidPathArgument("item/:id", "id", "string", "A valid identifier is required.")
 	else if (!model.Item.is(item))
 		result = gracely.client.invalidContent("Item", "Body is not a valid item.")
-	else
+	else if (gracely.Error.is(context.hooks))
+		result = context.hooks
+	else {
+		context.hooks.trigger("item-replace", item)
 		result = item
+	}
 	return result
 }
 router.add("PUT", "/item/:id", replace)

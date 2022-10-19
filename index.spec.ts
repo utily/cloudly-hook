@@ -1,8 +1,8 @@
 import "jest"
-import * as library from "./index"
+import * as hook from "./index"
 
-describe("library", () => {
+describe("hook", () => {
 	it("a", () => {
-		expect(library.a).toEqual(42)
+		expect(hook.HookStorage).toBeTruthy()
 	})
 })
