@@ -1,1 +1,6 @@
-export const a = 42
+import { Hooks } from "./Hooks"
+import { Queue } from "./Queue"
+
+const HookStorage = Queue.Storage
+
+export { Hooks, HookStorage }

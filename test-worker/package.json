@@ -48,6 +48,7 @@
 	"scripts": {
 		"lint": "eslint --max-warnings=0 '**/*.{ts,tsx}'",
 		"fix": "eslint '**/*.{ts,tsx}' --fix",
+		"prebuild": "cd .. && npm run build",
 		"build": "rollup -c",
 		"build:local": "rollup --config rollup.dev.config.js",
 		"dev": "NODE_ENV=development npm run build",

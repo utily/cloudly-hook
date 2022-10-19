@@ -7,6 +7,10 @@ workers_dev = true
 routes = ["https://example.com/item*"]
 vars = { }
 port = 8787
+[durable_objects]
+bindings = [
+	{ name = "hookNamespace", class_name = "HookStorage" },
+]
 
 [build]
 command = "npm install && npm run build:local"
@@ -23,9 +27,6 @@ vars = {  }
 
 [env.miniflare]
 vars = { }
-durable_objects.bindings = [
-
-]
 
 [miniflare]
 durable_objects_persist = "./.miniflare/durable-objects/"

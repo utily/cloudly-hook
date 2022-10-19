@@ -49,9 +49,10 @@
 	"scripts": {
 		"lint": "eslint --max-warnings=0 '**/*.{ts,tsx}'",
 		"fix": "eslint '**/*.{ts,tsx}' --fix",
+		"preinstall": "cd test-worker/ && npm install && cd ..",
 		"build": "tsc -p .",
 		"jest": "jest",
-		"test": "cd test-worker/ && npm i && npm run test && cd .. && jest",
+		"test": "cd test-worker/ && npm run test && cd .. && jest",
 		"prepare": "npm run build",
 		"clean": "rimraf dist node_modules coverage",
 		"start": "npm --prefix test-worker run start"
@@ -73,7 +74,7 @@
 		"cloudly-http": "^0.0.50",
 		"cloudly-router": "^0.0.24",
 		"cloudly-storage": "^0.4.4",
-		"cryptly": "^3.0.1",
+		"cryptly": "^3.0.2",
 		"gracely": "^2.0.3",
 		"isoly": "^2.0.11"
 	}
