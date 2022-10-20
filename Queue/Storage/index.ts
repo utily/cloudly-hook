@@ -14,6 +14,6 @@ export class Storage {
 	}
 	async alarm(): Promise<void> {
 		console.log("alarm triggered")
-		this.context.dequeue()
+		this.context.alarm()
 	}
 }
