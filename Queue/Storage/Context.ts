@@ -5,15 +5,12 @@ import * as platform from "../../platform"
 import { Item } from "../Item"
 
 export class Context {
-	private constructor(
-		private readonly state: platform.DurableObjectState,
-		private readonly url: URL,
-		private readonly MAX_RETRIES = 5
-	) {}
-	async enqueue(hook: Item, retries = 0, timeInSeconds = 10): Promise<void> {
+	private constructor(private readonly state: platform.DurableObjectState, private readonly MAX_RETRIES = 5) {}
+	async enqueue(hook: Item, retries = 0, timeInSeconds = 3): Promise<void> {
 		let index = await this.state.storage.get<number>("index")
 		index = typeof index == "number" ? ++index : 0
 		console.log("inside enqueue", index)
+		console.log("ID: ", this.state.id)
 		await this.state.storage.put(`hook${index}`, { hook, retries })
 		await this.state.storage.put("index", index)
 		this.state.waitUntil(
@@ -25,41 +22,34 @@ export class Context {
 	async dequeue(): Promise<Item | gracely.Error> {
 		let result: Item | gracely.Error
 		let index: number | undefined
-		let item: { hook: Item; retries: number } | undefined
+		let data: { item: Item; retries: number } | undefined
 		if (
 			typeof (index = await this.state.storage.get<number>("index")) == "undefined" ||
-			!(item = await this.state.storage.get<{ hook: Item; retries: number }>(`hook${index}`))
+			!(data = await this.state.storage.get<{ item: Item; retries: number }>(`hook${index}`))
 		)
 			result = gracely.server.databaseFailure("item not found")
 		else {
 			console.log("inside dequeue", index)
-			console.log("execute callback", item)
-			result = await this.send(item.hook)
+			console.log("execute callback", data)
+			result = await this.send(data.item)
 			await this.state.storage.delete(`hook${index}`)
 			await this.state.storage.put("index", --index)
-			if (gracely.Error.is(result) && item.retries < this.MAX_RETRIES)
-				this.enqueue(item.hook, ++item.retries)
+			if (gracely.Error.is(result) && data.retries < this.MAX_RETRIES)
+				this.enqueue(data.item, ++data.retries)
 			else {
 				if (index >= 0)
 					this.state.storage.setAlarm(
-						isoly.DateTime.epoch(isoly.DateTime.nextSecond(isoly.DateTime.now(), 10), "milliseconds")
+						isoly.DateTime.epoch(isoly.DateTime.nextSecond(isoly.DateTime.now(), 3), "milliseconds")
 					)
 			}
 		}
 		return result
 	}
-	static open(state: platform.DurableObjectState, url: string): Context {
-		return new Context(state, new URL(url))
+	static open(state: platform.DurableObjectState): Context {
+		return new Context(state)
 	}
 	async send(item: Item) {
-		const response = await http.fetch({
-			method: "POST",
-			url: this.url.toString(),
-			body: item,
-			header: { contentType: "application/json;charset=UTF-8" },
-		})
-		console.log("inside send", response.status)
-		return response.status < 400 ? item : gracely.server.unavailable("request unsuccessful")
+		return item.target()
 	}
 	async alarm(): Promise<void> {
 		console.log("context alarm triggered")

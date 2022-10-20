@@ -1,8 +1,11 @@
 import * as gracely from "gracely"
 import * as http from "cloudly-http"
 import { Context } from "../Context"
+import { itemCallback } from "../Context/target"
 import * as model from "../model"
 import { router } from "../router"
+
+import "../Context/target"
 
 export async function create(request: http.Request, context: Context): Promise<http.Response.Like | any> {
 	let result: gracely.Result
@@ -15,7 +18,7 @@ export async function create(request: http.Request, context: Context): Promise<h
 	else if (gracely.Error.is(hooks))
 		result = hooks
 	else {
-		hooks.trigger("item-create", item)
+		hooks.trigger("item-create", { ...item, target: () => itemCallback(item) })
 		result = gracely.success.created(item)
 	}
 	return result
