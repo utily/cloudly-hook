@@ -13,6 +13,6 @@ export class Hooks<T extends Record<string, any>> {
 		queueStorage: platform.DurableObjectNamespace | undefined
 	): Hooks<T> | undefined {
 		const namespace = storage.DurableObject.Namespace.open(queueStorage)
-		return namespace && new Hooks(Queue.open(namespace.open("test")))
+		return namespace && new Hooks(Queue.open(namespace))
 	}
 }
