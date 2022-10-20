@@ -5,6 +5,8 @@ import * as model from "../model"
 import { router } from "../router"
 import { Environment as ContextEnvironment } from "./Environment"
 
+import "./target"
+
 export class Context {
 	#hooks?: Context.Hooks | gracely.Error
 	get hooks(): Context.Hooks | gracely.Error {
@@ -35,7 +37,7 @@ export class Context {
 export namespace Context {
 	export type Environment = ContextEnvironment
 	export type Hooks = hook.Hooks<{
-		"item-create": model.Item
+		"item-create": model.Item & { target(): model.Item | gracely.Error }
 		"item-change": model.Item
 		"item-fetch": model.Item
 		"item-remove": model.Item
