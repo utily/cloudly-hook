@@ -13,7 +13,7 @@ export class Queue {
 	}
 	async enqueue(hook: string, value: http.Request): Promise<void> {
 		this.#client = this.namespace.open(Identifier.generate(16))
-		this.#client.post<Record<string, any>>("/queue", { hook, value })
+		console.log(await this.#client.post<Record<string, any>>("/queue", { hook, value }))
 	}
 	static open(namespace: storage.DurableObject.Namespace): Queue {
 		return new Queue(namespace)

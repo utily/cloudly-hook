@@ -38,10 +38,10 @@ export namespace Context {
 	export type Environment = ContextEnvironment
 	export type Hooks = hook.Hooks<{
 		"item-create": http.Request
-		"item-change": model.Item
-		"item-fetch": model.Item
-		"item-remove": model.Item
-		"item-replace": model.Item
-		"item-list": model.Item[]
+		"item-change": http.Request
+		"item-fetch": http.Request
+		"item-remove": http.Request
+		"item-replace": http.Request
+		"item-list": http.Request
 	}>
 }
