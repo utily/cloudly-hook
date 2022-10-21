@@ -1,3 +1,5 @@
+import { Identifier } from "cryptly"
+import * as http from "cloudly-http"
 import * as storage from "cloudly-storage"
 import { Storage as QueueStorage } from "./Storage"
 
@@ -9,8 +11,8 @@ export class Queue {
 		// 	return false
 		// }
 	}
-	async enqueue(hook: string, value: any): Promise<void> {
-		this.#client = this.namespace.open(hook)
+	async enqueue(hook: string, value: http.Request): Promise<void> {
+		this.#client = this.namespace.open(Identifier.generate(16))
 		this.#client.post<Record<string, any>>("/queue", { hook, value })
 	}
 	static open(namespace: storage.DurableObject.Namespace): Queue {
