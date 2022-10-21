@@ -37,7 +37,7 @@ export class Context {
 export namespace Context {
 	export type Environment = ContextEnvironment
 	export type Hooks = hook.Hooks<{
-		"item-create": model.Item & { target(): model.Item | gracely.Error }
+		"item-create": http.Request
 		"item-change": model.Item
 		"item-fetch": model.Item
 		"item-remove": model.Item
