@@ -1,4 +1,5 @@
 import * as http from "cloudly-http"
+import { Header } from "cloudly-http/dist/Request/Header"
 import * as storage from "cloudly-storage"
 import * as platform from "./platform"
 import { Queue } from "./Queue"
@@ -7,8 +8,11 @@ export class Hooks<T extends Record<string, http.Request>> {
 	destination?: string | Partial<Record<keyof T, string>>
 	private constructor(readonly queue: Queue) {}
 	async trigger<H extends keyof T>(hook: H, value: T[H]): Promise<void> {
+		const newHeader = Object.fromEntries(
+			Object.entries(value.header).filter(([header, _]) => header != "contentLength")
+		)
 		const request = http.Request.create({
-			header: value.header,
+			header: newHeader,
 			method: "POST",
 			body: await value.body,
 			url: "https://ptsv2.com/t/42xbq-1666270086/post",

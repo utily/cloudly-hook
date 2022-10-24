@@ -11,7 +11,7 @@ export class Context {
 	}
 	private async tryEnqueue(item: Item, retries = 0, timeInSeconds = 10): Promise<void> {
 		console.log("inside enqueue", this.state.id)
-		await this.state.storage.put(`hook`, { value: item, retries })
+		await this.state.storage.put(`hook`, { item: item, retries: retries })
 		this.state.waitUntil(
 			this.state.storage.setAlarm(
 				isoly.DateTime.epoch(isoly.DateTime.nextSecond(isoly.DateTime.now(), timeInSeconds), "milliseconds")
@@ -21,7 +21,11 @@ export class Context {
 	async dequeue(): Promise<http.Response | gracely.Error> {
 		let result: http.Response | gracely.Error
 		let data: { item: Item; retries: number } | undefined
-		if (!(data = await this.state.storage.get<{ item: Item; retries: number }>(`hook`)))
+		if (
+			!(data = await this.state.storage.get<{ item: Item; retries: number }>(`hook`)) ||
+			!data.item ||
+			!Item.is(data.item)
+		)
 			result = gracely.server.databaseFailure("item not found")
 		else {
 			console.log("inside dequeue:", data)

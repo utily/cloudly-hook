@@ -7,11 +7,10 @@ import { router } from "../router"
 export async function create(request: http.Request, context: Context): Promise<http.Response.Like | any> {
 	let result: gracely.Result
 	const item = await request.body
-	if (!Item.is(item)) {
-		console.log(item)
+
+	if (!Item.is(item))
 		result = gracely.client.invalidContent("Item", "Body is not a valid item.")
-	} else {
-		console.log("enqueue", item, context)
+	else {
 		await context.enqueue(item)
 		result = gracely.success.created(item)
 	}

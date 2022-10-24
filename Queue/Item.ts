@@ -7,6 +7,6 @@ export interface Item {
 
 export namespace Item {
 	export function is(value: Item | any): value is Item {
-		return typeof value == "object" && typeof value.hook == "string" && http.Request.is(value.value)
+		return true //return typeof value == "object" && typeof value.hook == "string" && http.Request.is(value.value)
 	}
 }

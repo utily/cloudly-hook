@@ -1,4 +1,5 @@
 import { Identifier } from "cryptly"
+import "./Item"
 import * as http from "cloudly-http"
 import * as storage from "cloudly-storage"
 import { Storage as QueueStorage } from "./Storage"
