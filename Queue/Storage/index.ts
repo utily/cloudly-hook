@@ -13,7 +13,6 @@ export class Storage {
 		return http.Response.to(await router.handle(http.Request.from(request), this.context))
 	}
 	async alarm(): Promise<void> {
-		console.log("alarm triggered")
 		this.context.dequeue()
 	}
 }

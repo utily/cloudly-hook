@@ -1,11 +1,8 @@
 import * as gracely from "gracely"
 import * as hook from "cloudly-hook"
 import * as http from "cloudly-http"
-import * as model from "../model"
 import { router } from "../router"
 import { Environment as ContextEnvironment } from "./Environment"
-
-import "./target"
 
 export class Context {
 	#hooks?: Context.Hooks | gracely.Error
@@ -13,7 +10,7 @@ export class Context {
 		return (
 			this.#hooks ??
 			(this.#hooks =
-				hook.Hooks.open(this.environment.hookNamespace) ??
+				hook.Hooks.open(this.environment.hookNamespace, Context.Destinations) ??
 				gracely.server.misconfigured("hookNamespace", "Hook queue namespace not correctly configured."))
 		)
 	}
@@ -34,6 +31,7 @@ export class Context {
 		return http.Response.to(result)
 	}
 }
+
 export namespace Context {
 	export type Environment = ContextEnvironment
 	export type Hooks = hook.Hooks<{
@@ -44,4 +42,12 @@ export namespace Context {
 		"item-replace": http.Request
 		"item-list": http.Request
 	}>
+	export const Destinations = {
+		"item-create": "https://ptsv2.com/t/42xbq-1666270086/post",
+		"item-change": "https://ptsv2.com/t/42xbq-1666270086/post",
+		"item-fetch": "https://ptsv2.com/t/42xbq-1666270086/post",
+		"item-remove": "https://ptsv2.com/t/42xbq-1666270086/post",
+		"item-replace": "https://ptsv2.com/t/42xbq-1666270086/post",
+		"item-list": "https://ptsv2.com/t/42xbq-1666270086/post",
+	}
 }

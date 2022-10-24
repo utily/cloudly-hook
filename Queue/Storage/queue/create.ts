@@ -8,10 +8,8 @@ export async function create(request: http.Request, context: Context): Promise<h
 	let result: gracely.Result
 	const item = await request.body
 	if (!Item.is(item)) {
-		console.log(item)
 		result = gracely.client.invalidContent("Item", "Body is not a valid item.")
 	} else {
-		console.log("enqueue", item, context)
 		await context.enqueue(item)
 		result = gracely.success.created(item)
 	}

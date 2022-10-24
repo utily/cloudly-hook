@@ -55,7 +55,8 @@
 		"test": "cd test-worker/ && npm run test && cd .. && jest",
 		"prepare": "npm run build",
 		"clean": "rimraf dist node_modules coverage",
-		"start": "npm --prefix test-worker run start"
+		"start": "npm --prefix test-worker run start",
+		"uninstall": "rm -rf dist && rm -rf test-worker/dist"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.2.0",
