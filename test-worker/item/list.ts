@@ -9,8 +9,12 @@ export async function list(request: http.Request, context: Context): Promise<htt
 	const authorization = request.header.authorization
 	if (!authorization)
 		result = gracely.client.unauthorized()
-	else
+	else if (gracely.Error.is(context.hooks))
+		result = context.hooks
+	else {
 		result = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"].map((id, number) => ({ id, number }))
+		context.hooks.trigger("item-list", result)
+	}
 	return result
 }
 router.add("GET", "/item", list)
