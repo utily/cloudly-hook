@@ -10,8 +10,11 @@ export class Context {
 		return (
 			this.#hooks ??
 			(this.#hooks =
-				hook.Hooks.open(this.environment.hookNamespace, Context.Destinations) ??
-				gracely.server.misconfigured("hookNamespace", "Hook queue namespace not correctly configured."))
+				hook.Hooks.open(this.environment.hookNamespace, this.environment.destinationNamespace) ??
+				gracely.server.misconfigured(
+					"namespaces",
+					"Hook queue namespace or hook destination namespace not correctly configured."
+				))
 		)
 	}
 	constructor(public readonly environment: Context.Environment) {}
@@ -34,20 +37,5 @@ export class Context {
 
 export namespace Context {
 	export type Environment = ContextEnvironment
-	export type Hooks = hook.Hooks<{
-		"item-create": http.Request
-		"item-change": http.Request
-		"item-fetch": http.Request
-		"item-remove": http.Request
-		"item-replace": http.Request
-		"item-list": http.Request
-	}>
-	export const Destinations = {
-		"item-create": "https://ptsv2.com/t/42xbq-1666270086/post",
-		"item-change": "https://ptsv2.com/t/42xbq-1666270086/post",
-		"item-fetch": "https://ptsv2.com/t/42xbq-1666270086/post",
-		"item-remove": "https://ptsv2.com/t/42xbq-1666270086/post",
-		"item-replace": "https://ptsv2.com/t/42xbq-1666270086/post",
-		"item-list": "https://ptsv2.com/t/42xbq-1666270086/post",
-	}
+	export type Hooks = hook.Hooks
 }

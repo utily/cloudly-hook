@@ -7,6 +7,9 @@ workers_dev = true
 routes = ["https://example.com/item*"]
 vars = { }
 port = 8787
+kv_namespaces = [
+	{ binding = "destinationNamespace", id = "abcdefg01234567890" },
+]
 [durable_objects]
 bindings = [
 	{ name = "hookNamespace", class_name = "HookStorage" },

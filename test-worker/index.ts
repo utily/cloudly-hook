@@ -3,6 +3,7 @@ import { Context } from "./Context"
 
 import "./item"
 import "./version"
+import "./registration"
 
 export default {
 	async fetch(request: Request, environment: Context.Environment) {

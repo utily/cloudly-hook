@@ -17,7 +17,7 @@ export async function change(request: http.Request, context: Context): Promise<h
 	else if (gracely.Error.is(context.hooks))
 		result = context.hooks
 	else {
-		context.hooks.trigger("item-change", item)
+		context.hooks.trigger("item-change", item.id, item)
 		result = { ...item, id }
 	}
 	return result
