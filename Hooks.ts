@@ -1,33 +1,56 @@
+import * as gracely from "gracely"
 import * as http from "cloudly-http"
 import * as storage from "cloudly-storage"
 import * as platform from "./platform"
 import { Queue } from "./Queue"
 
-export class Hooks<T extends Record<string, http.Request>> {
-	destination: string | Partial<Record<keyof T, string>>
-	private constructor(readonly queue: Queue, destination: string | Partial<Record<keyof T, string>>) {
-		this.destination = destination
-	}
-	async trigger<H extends keyof T>(hook: H, value: T[H]): Promise<void> {
-		const url = typeof this.destination == "string" ? this.destination : this.destination[hook]
+export class Hooks {
+	private constructor(readonly queue: Queue, readonly registrations: storage.KeyValueStore<string>) {}
+	async trigger(hook: string, id: string, value: any): Promise<void> {
+		const url = await this.registrations.get(`${hook}/${id}`)
 		if (url) {
 			const request = http.Request.create({
-				header: Object.fromEntries(Object.entries(value.header).filter(([header, _]) => header != "contentLength")),
 				method: "POST",
-				body: await value.body,
-				url: url,
+				body: value,
+				url: url.value,
 			})
-			this.queue.enqueue(hook as string, request)
+			this.queue.enqueue(hook, request)
 		}
 	}
-	static open<T extends Record<string, any>>(
+	static open(
 		queueStorage: platform.DurableObjectNamespace | undefined,
-		destination: string | Partial<Record<keyof T, string>>
-	): Hooks<T> | undefined {
-		const namespace = storage.DurableObject.Namespace.open(queueStorage)
-		return namespace && new Hooks(Queue.open(namespace), destination)
+		registrationStorage: platform.KVNamespace | undefined
+	): Hooks | undefined {
+		const queueNamespace = storage.DurableObject.Namespace.open(queueStorage)
+		const registrations = registrationStorage
+			? storage.KeyValueStore.partition(storage.KeyValueStore.Json.create(registrationStorage), "hook/")
+			: undefined
+		return queueNamespace && registrations && new Hooks(Queue.open(queueNamespace), registrations)
 	}
-	setDestination(destination: string | Partial<Record<keyof T, string>>) {
-		this.destination = destination
+	async register(hook: string, id: string, destination: string, update = false): Promise<gracely.Result> {
+		let result: gracely.Result
+		if (!this.validateUrl(destination))
+			result = gracely.client.invalidContent("url", "Invalid url or illegal protocol (should use 'https:').")
+		else if (!update && (await this.registrations.get(`${hook}/${id}`)))
+			result = gracely.client.invalidContent(
+				"registration",
+				`Url already registered for hook '${hook}'. Did you mean to update?`
+			)
+		else {
+			await this.registrations.set(`${hook}/${id}`, destination)
+			result = gracely.success.created({ hook: hook, url: destination })
+		}
+		return result
+	}
+	private validateUrl(destination: string): boolean {
+		let url: URL
+		let result: boolean
+		try {
+			url = new URL(destination)
+			result = url.protocol === "https:"
+		} catch (e) {
+			result = false
+		}
+		return result
 	}
 }
