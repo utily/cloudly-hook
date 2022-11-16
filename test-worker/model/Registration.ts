@@ -15,8 +15,8 @@ export namespace Registration {
 				value.hook == "item-change" ||
 				value.hook == "item-fetch" ||
 				value.hook == "item-remove" ||
-				value.hook == "item-replace" ||
-				value.hook == "item-list")
+				// value.hook == "item-list" ||
+				value.hook == "item-replace")
 		)
 	}
 }
