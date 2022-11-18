@@ -1,6 +1,6 @@
 {
 	"name": "cloudly-hook",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Library to handle webhooks in Cloudflare Workers.",
 	"author": "Utily Contributors",
 	"license": "MIT",
