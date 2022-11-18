@@ -13,7 +13,7 @@ export async function list(request: http.Request, context: Context): Promise<htt
 		result = context.hooks
 	else {
 		result = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"].map((id, number) => ({ id, number }))
-		context.hooks.trigger("item-list", result)
+		context.hooks.trigger("item-list", "g", result) // FIXME: not working right now because of id requirement
 	}
 	return result
 }

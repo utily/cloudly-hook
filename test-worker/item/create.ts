@@ -4,8 +4,6 @@ import { Context } from "../Context"
 import * as model from "../model"
 import { router } from "../router"
 
-import "../Context/target"
-
 export async function create(request: http.Request, context: Context): Promise<http.Response.Like | any> {
 	let result: gracely.Result
 	const item = await request.body
@@ -17,7 +15,7 @@ export async function create(request: http.Request, context: Context): Promise<h
 	else if (gracely.Error.is(hooks))
 		result = hooks
 	else {
-		hooks.trigger("item-create", request)
+		hooks.trigger("item-create", item.id, item)
 		result = gracely.success.created(item)
 	}
 	return result
