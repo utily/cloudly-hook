@@ -17,7 +17,7 @@ export async function register(request: http.Request, context: Context): Promise
 	else if (gracely.Error.is(hooks))
 		result = hooks
 	else {
-		const id = Buffer.from(request.header.proxyAuthorization.slice(6), "base64").toString("utf8")
+		const id = request.header.proxyAuthorization.slice(6)
 		result = await hooks.register(`${registration.hook}/${id}`, registration.destination)
 	}
 	return result
