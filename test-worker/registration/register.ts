@@ -10,12 +10,15 @@ export async function register(request: http.Request, context: Context): Promise
 	const hooks = context.hooks
 	if (!request.header.authorization)
 		result = gracely.client.unauthorized()
+	else if (!request.header.proxyAuthorization)
+		result = gracely.client.missingHeader("Proxy-Authorization", "Hook requires an identifier.")
 	else if (!model.Registration.is(registration))
 		result = gracely.client.invalidContent("Registration", "Body is not a valid registration.")
 	else if (gracely.Error.is(hooks))
 		result = hooks
 	else {
-		result = await hooks.register(registration.hook, registration.id, registration.destination)
+		const id = request.header.proxyAuthorization.slice(6)
+		result = await hooks.register(`${registration.hook}/${id}`, registration.destination)
 	}
 	return result
 }

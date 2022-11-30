@@ -17,7 +17,7 @@ export async function replace(request: http.Request, context: Context): Promise<
 	else if (gracely.Error.is(context.hooks))
 		result = context.hooks
 	else {
-		context.hooks.trigger("item-replace", item.id, item, true)
+		context.hooks.trigger(`item-replace/${item.id}`, item)
 		result = item
 	}
 	return result
