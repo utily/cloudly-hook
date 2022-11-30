@@ -6,8 +6,8 @@ import { Queue } from "./Queue"
 
 export class Hooks {
 	private constructor(readonly queue: Queue, readonly registrations: storage.KeyValueStore<string>) {}
-	async trigger(hook: string, id: string, value: any): Promise<void> {
-		const url = await this.registrations.get(`${hook}/${id}`)
+	async trigger(hook: string, value: any): Promise<void> {
+		const url = await this.registrations.get(hook)
 		if (url) {
 			const request = http.Request.create({
 				method: "POST",
@@ -27,17 +27,17 @@ export class Hooks {
 			: undefined
 		return queueNamespace && registrations && new Hooks(Queue.open(queueNamespace), registrations)
 	}
-	async register(hook: string, id: string, destination: string, update = false): Promise<gracely.Result> {
+	async register(hook: string, destination: string, update = false): Promise<gracely.Result> {
 		let result: gracely.Result
 		if (!this.validateUrl(destination))
 			result = gracely.client.invalidContent("url", "Invalid url or illegal protocol (should use 'https:').")
-		else if (!update && (await this.registrations.get(`${hook}/${id}`)))
+		else if (!update && (await this.registrations.get(hook)))
 			result = gracely.client.invalidContent(
 				"registration",
 				`Url already registered for hook '${hook}'. Did you mean to update?`
 			)
 		else {
-			await this.registrations.set(`${hook}/${id}`, destination)
+			await this.registrations.set(hook, destination)
 			result = gracely.success.created({ hook: hook, url: destination })
 		}
 		return result
