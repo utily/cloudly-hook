@@ -18,4 +18,5 @@ export interface DurableObjectStorage {
 	getAlarm(options?: DurableObjectGetAlarmOptions): Promise<number | null>
 	setAlarm(scheduledTime: number | Date, options?: DurableObjectSetAlarmOptions): Promise<void>
 	deleteAlarm(options?: DurableObjectSetAlarmOptions): Promise<void>
+	sync(): Promise<void>
 }

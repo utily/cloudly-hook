@@ -1,9 +1,9 @@
 import { DurableObjectId } from "./DurableObjectId"
+import { Fetcher } from "./Fetcher"
 
-export interface DurableObjectStub {
-	name?: string
-	id: DurableObjectId
-	fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+export interface DurableObjectStub extends Fetcher {
+	readonly id: DurableObjectId
+	readonly name?: string
 }
 
 export namespace DurableObjectStub {
