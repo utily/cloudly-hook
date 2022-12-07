@@ -71,7 +71,7 @@ interface IncomingRequestCfPropertiesCloudflareAccessOrApiShield {
 	tlsClientAuth: IncomingRequestCfPropertiesTLSClientAuth | IncomingRequestCfPropertiesTLSClientAuthPlaceholder
 }
 type IncomingRequestCfPropertiesGeographicInformation =
-	| {}
+	| unknown
 	| {
 			country: "T1"
 	  }
