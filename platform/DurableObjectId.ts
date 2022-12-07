@@ -1,6 +1,7 @@
 export interface DurableObjectId {
-	name?: string
-	toString: () => string
+	toString(): string
+	equals(other: DurableObjectId): boolean
+	readonly name?: string
 }
 
 export namespace DurableObjectId {
