@@ -6,14 +6,17 @@ import { router } from "../router"
 
 export async function list(request: http.Request, context: Context): Promise<http.Response.Like | any> {
 	let result: model.Item[] | gracely.Error
+	const hooks = context.hooks
 	const authorization = request.header.authorization
 	if (!authorization)
 		result = gracely.client.unauthorized()
-	else if (gracely.Error.is(context.hooks))
-		result = context.hooks
+	else if (gracely.Error.is(hooks))
+		result = hooks
 	else {
 		result = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"].map((id, number) => ({ id, number }))
-		context.hooks.trigger("item-list", result) // FIXME: not working right now because of id requirement
+		;(await context.destinations)
+			.filter(registration => registration.hook == "item-list")
+			.forEach(registration => hooks.trigger(registration.destination, result))
 	}
 	return result
 }
