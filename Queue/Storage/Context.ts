@@ -2,7 +2,6 @@ import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as http from "cloudly-http"
 import * as platform from "../../platform"
-import { Item } from "../Item"
 
 export class Context {
 	private constructor(
@@ -10,11 +9,11 @@ export class Context {
 		private readonly maxRetries = 5,
 		private readonly timeFactor = 1
 	) {}
-	async enqueue(item: Item): Promise<void> {
-		this.tryEnqueue(item)
+	async enqueue(request: http.Request.Like): Promise<void> {
+		this.tryEnqueue(request)
 	}
-	private async tryEnqueue(item: Item, retries = 0): Promise<void> {
-		await this.state.storage.put(`hook`, { item: item, retries: retries })
+	private async tryEnqueue(request: http.Request.Like, retries = 0): Promise<void> {
+		await this.state.storage.put(`hook`, { request: request, retries: retries })
 		this.state.waitUntil(
 			this.state.storage.setAlarm(
 				isoly.DateTime.epoch(isoly.DateTime.nextSecond(isoly.DateTime.now(), this.timeFactor * retries), "milliseconds")
@@ -23,26 +22,25 @@ export class Context {
 	}
 	async dequeue(): Promise<http.Response | gracely.Error> {
 		let result: http.Response | gracely.Error
-		let data: { item: Item; retries: number } | undefined
+		let data: { request: http.Request.Like; retries: number } | undefined
 		if (
-			!(data = await this.state.storage.get<{ item: Item; retries: number }>(`hook`)) ||
-			!data.item ||
-			!Item.is(data.item)
+			!(data = await this.state.storage.get<{ request: http.Request.Like; retries: number }>(`hook`)) ||
+			!data.request
 		)
 			result = gracely.server.databaseFailure("item not found")
 		else {
-			result = await this.send(data.item)
+			result = await this.send(data.request)
 			await this.state.storage.delete(`hook`)
 			if (gracely.Error.is(result) && data.retries < this.maxRetries)
-				this.tryEnqueue(data.item, ++data.retries)
+				this.tryEnqueue(data.request, ++data.retries)
 		}
 		return result
 	}
 	static open(state: platform.DurableObjectState, maxRetries?: number, timeFactor?: number): Context {
 		return new Context(state, maxRetries, timeFactor)
 	}
-	async send(item: Item): Promise<http.Response | gracely.Error> {
-		const response = await http.fetch(item.value)
+	async send(request: http.Request.Like): Promise<http.Response | gracely.Error> {
+		const response = await http.fetch(request)
 		return gracely.Error.is(response.body) ? response.body : response
 	}
 }

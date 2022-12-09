@@ -15,7 +15,9 @@ export async function create(request: http.Request, context: Context): Promise<h
 	else if (gracely.Error.is(hooks))
 		result = hooks
 	else {
-		hooks.trigger(`item-create/${item.id}`, item)
+		;(await context.destinations)
+			.filter(registration => registration.hook == "item-create")
+			.forEach(registration => hooks.trigger(registration.destination, item))
 		result = gracely.success.created(item)
 	}
 	return result

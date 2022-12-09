@@ -7,19 +7,25 @@ import { router } from "../router"
 export async function register(request: http.Request, context: Context): Promise<http.Response.Like | any> {
 	let result: gracely.Result
 	const registration = await request.body
-	const hooks = context.hooks
 	if (!request.header.authorization)
 		result = gracely.client.unauthorized()
-	else if (!request.header.proxyAuthorization)
-		result = gracely.client.missingHeader("Proxy-Authorization", "Hook requires an identifier.")
-	else if (!model.Registration.is(registration))
+	else if (!model.Registration.is(registration) || !validateURL(registration.destination))
 		result = gracely.client.invalidContent("Registration", "Body is not a valid registration.")
-	else if (gracely.Error.is(hooks))
-		result = hooks
 	else {
-		const id = request.header.proxyAuthorization.slice(6)
-		result = await hooks.register(`${registration.hook}/${id}`, registration.destination)
+		context.listen(registration)
+		result = gracely.success.created(registration)
 	}
 	return result
 }
 router.add("POST", "/register", register)
+
+function validateURL(destination: string): boolean {
+	let result: boolean
+	try {
+		const url = new URL(destination)
+		result = url.protocol == "https:"
+	} catch (e) {
+		result = false
+	}
+	return result
+}
