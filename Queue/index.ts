@@ -1,6 +1,6 @@
 import { Identifier } from "cryptly"
-import * as http from "cloudly-http"
-import * as storage from "cloudly-storage"
+import { http } from "cloudly-http"
+import { storage } from "cloudly-storage"
 import { Storage as QueueStorage } from "./Storage"
 
 export class Queue {
