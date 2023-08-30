@@ -24,7 +24,10 @@
 				"types/*"
 			]
 		},
-		"types": ["jest"]
+		"types": [
+			"jest",
+			"@cloudflare/workers-types"
+		]
 	},
 	"files": [
 		"index.ts"

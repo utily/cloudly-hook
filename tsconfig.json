@@ -7,22 +7,9 @@
 		"outDir": "dist",
 		"baseUrl": ".",
 		"allowSyntheticDefaultImports": true,
-		"types": [
-			"@cloudflare/workers-types"
-		]
+		"types": []
 	},
 	"files": [
 		"index.ts",
-	],
-	"include": [
-		"*.ts",
-		"**/*.ts",
-		"./node_modules/@cloudflare/workers-types/index.d.ts"
-	],
-	"exclude": [
-		"*.spec.ts",
-		"**/*.spec.ts",
-		"node_modules/",
-		"dist/"
 	]
 }

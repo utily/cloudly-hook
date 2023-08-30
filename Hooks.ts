@@ -1,3 +1,4 @@
+import * as cloudflare from "@cloudflare/workers-types"
 import { http } from "cloudly-http"
 import { storage } from "cloudly-storage"
 import { Queue } from "./Queue"
@@ -20,7 +21,7 @@ export class Hooks {
 		}
 		this.queue.enqueue(request)
 	}
-	static open(queueStorage: DurableObjectNamespace | undefined): Hooks | undefined {
+	static open(queueStorage: cloudflare.DurableObjectNamespace | undefined): Hooks | undefined {
 		const queueNamespace = storage.DurableObject.Namespace.open(queueStorage)
 		return queueNamespace && new Hooks(Queue.open(queueNamespace))
 	}

@@ -60,8 +60,8 @@
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20230821.0",
 		"@types/jest": "^29.5.4",
-		"@typescript-eslint/eslint-plugin": "6.4.1",
-		"@typescript-eslint/parser": "6.4.1",
+		"@typescript-eslint/eslint-plugin": "6.5.0",
+		"@typescript-eslint/parser": "6.5.0",
 		"eslint": "^8.48.0",
 		"eslint-plugin-prettierx": "github:utily/eslint-plugin-prettierx#utily-20221229",
 		"eslint-plugin-simple-import-sort": "^10.0.0",
@@ -75,11 +75,11 @@
 		"semver": "7.5.3"
 	},
 	"dependencies": {
-		"cloudly-http": "^0.2.0-alpha.13",
-		"cloudly-router": "0.2.0-alpha.11",
-		"cloudly-storage": "^0.9.6",
+		"cloudly-http": "^0.1.6",
+		"cloudly-router": "^0.1.1",
+		"cloudly-storage": "0.9.6",
 		"cryptly": "^3.0.7",
 		"gracely": "^2.0.4",
-		"isoly": "^2.0.14"
+		"isoly": "^2.0.25"
 	}
 }

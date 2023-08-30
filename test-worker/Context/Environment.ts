@@ -1,5 +1,8 @@
-export interface Environment extends Record<string, undefined | string | DurableObjectNamespace | KVNamespace> {
+import * as cloudflare from "@cloudflare/workers-types"
+
+export interface Environment
+	extends Record<string, undefined | string | cloudflare.DurableObjectNamespace | cloudflare.KVNamespace> {
 	adminSecret?: string
-	hookNamespace?: DurableObjectNamespace
-	destinationNamespace?: KVNamespace
+	hookNamespace?: cloudflare.DurableObjectNamespace
+	destinationNamespace?: cloudflare.KVNamespace
 }
