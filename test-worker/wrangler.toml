@@ -1,36 +1,32 @@
-compatibility_date = "2021-10-21"
-type = "javascript"
+compatibility_date = "2022-11-25"
 name = "worker-template"
-account_id = "abcdefg01234567890"
-zone_id = "abcdefg01234567890"
 workers_dev = true
-routes = ["https://example.com/item*"]
-vars = { }
-port = 8787
-kv_namespaces = [
-	{ binding = "destinationNamespace", id = "abcdefg01234567890" },
-]
-[durable_objects]
-bindings = [
-	{ name = "hookNamespace", class_name = "HookStorage" },
-]
+routes = []
+vars = {}
+main = "./dist/_worker.js"
+
 
 [build]
-command = "npm install && npm run build:local"
+command = "npm install && npm run build"
+upload.format = "modules"
 
-[build.upload]
-format = "modules"
-dir = "dist"
-main = "./_worker.mjs"
+[env.production]
+workers_dev = false
+vars = {}
+durable_objects.bindings = []
+kv_namespaces = []
+r2_buckets = []
 
-[env.wrangler]
+[env.local]
 workers_dev = true
-account_id = "abcdefg01234567890"
-vars = {  }
-
-[env.miniflare]
-vars = { }
+vars = { adminSecret = "adminSecret" }
+durable_objects.bindings = [
+	{ name = "hookNamespace", class_name = "HookStorage" },
+]
+kv_namespaces = [{ binding = "destinationNamespace", id = "123abc" }]
+r2_buckets = []
 
 [miniflare]
 durable_objects_persist = "./.miniflare/durable-objects/"
 kv_persist = "./.miniflare/kv/"
+port = 8788

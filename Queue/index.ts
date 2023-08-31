@@ -1,13 +1,13 @@
-import { Identifier } from "cryptly"
-import * as http from "cloudly-http"
-import * as storage from "cloudly-storage"
+import { http } from "cloudly-http"
+import { storage } from "cloudly-storage"
 import { Storage as QueueStorage } from "./Storage"
 
 export class Queue {
 	#client: storage.DurableObject.Client
-	private constructor(private readonly namespace: storage.DurableObject.Namespace) {}
+	private constructor(private readonly namespace: storage.DurableObject.Namespace) {
+		this.#client = this.namespace.open()
+	}
 	async enqueue(request: http.Request.Like): Promise<void> {
-		this.#client = this.namespace.open(Identifier.generate(16))
 		await this.#client.post<Record<string, any>>("/queue", request)
 	}
 	static open(namespace: storage.DurableObject.Namespace): Queue {
@@ -16,5 +16,6 @@ export class Queue {
 }
 
 export namespace Queue {
+	export type Storage = QueueStorage
 	export const Storage = QueueStorage
 }

@@ -1,11 +1,11 @@
-import * as gracely from "gracely"
+import { gracely } from "gracely"
 import * as isoly from "isoly"
-import * as http from "cloudly-http"
-import * as platform from "../../platform"
+import * as cloudflare from "@cloudflare/workers-types"
+import { http } from "cloudly-http"
 
 export class Context {
 	private constructor(
-		private readonly state: platform.DurableObjectState,
+		private readonly state: cloudflare.DurableObjectState,
 		private readonly maxRetries = 5,
 		private readonly timeFactor = 1
 	) {}
@@ -36,7 +36,7 @@ export class Context {
 		}
 		return result
 	}
-	static open(state: platform.DurableObjectState, maxRetries?: number, timeFactor?: number): Context {
+	static open(state: cloudflare.DurableObjectState, maxRetries?: number, timeFactor?: number): Context {
 		return new Context(state, maxRetries, timeFactor)
 	}
 	async send(request: http.Request.Like): Promise<http.Response | gracely.Error> {

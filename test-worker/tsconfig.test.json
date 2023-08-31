@@ -6,7 +6,7 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "esModuleInterop": true,
-		"lib": ["es2019", "webworker"],
+		"lib": ["es2019"],
 		"noImplicitAny": true,
 		"removeComments": true,
 		"preserveConstEnums": true,

@@ -1,14 +1,15 @@
-import * as gracely from "gracely"
-import * as http from "cloudly-http"
+import { gracely } from "gracely"
+import { http } from "cloudly-http"
 import { Context } from "../Context"
 import * as model from "../model"
 import { router } from "../router"
 
-export async function change(request: http.Request, context: Context): Promise<http.Response.Like | any> {
+export async function change(request: http.Request, context: Context): Promise<model.Item | gracely.Error> {
 	let result: model.Item | gracely.Error
+	let destinations: gracely.Error | model.Registration[]
+	const hooks = context.hooks
 	const id = request.parameter.id
 	const item = await request.body
-	const hooks = context.hooks
 	if (!request.header.authorization)
 		result = gracely.client.unauthorized()
 	else if (!id || id.length != 1 || id < "a" || id > "f")
@@ -17,11 +18,13 @@ export async function change(request: http.Request, context: Context): Promise<h
 		result = gracely.client.invalidContent("Item", "Body is not a valid item.")
 	else if (gracely.Error.is(hooks))
 		result = hooks
+	else if (gracely.Error.is((destinations = await context.destinations)))
+		result = destinations
 	else {
-		;(await context.destinations)
-			.filter(registration => registration.hook == "item-change")
-			.forEach(registration => hooks.trigger(registration.destination, item))
 		result = { ...item, id }
+		destinations
+			.filter(registration => registration.hook == "item-change")
+			.forEach(registration => hooks.trigger(registration.destination, result))
 	}
 	return result
 }
