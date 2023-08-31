@@ -18,10 +18,10 @@ export async function remove(request: http.Request, context: Context): Promise<m
 	else if (gracely.Error.is((destinations = await context.destinations)))
 		result = destinations
 	else {
+		result = { id, number: id.charCodeAt(0) - "a".charCodeAt(0) }
 		destinations
 			.filter(registration => registration.hook == "item-remove")
-			.forEach(registration => hooks.trigger(registration.destination, id))
-		result = { id, number: id.charCodeAt(0) - "a".charCodeAt(0) }
+			.forEach(registration => hooks.trigger(registration.destination, result))
 	}
 	return result
 }

@@ -20,8 +20,12 @@ export async function change(request: http.Request, context: Context): Promise<m
 		result = hooks
 	else if (gracely.Error.is((destinations = await context.destinations)))
 		result = destinations
-	else
+	else {
 		result = { ...item, id }
+		destinations
+			.filter(registration => registration.hook == "item-change")
+			.forEach(registration => hooks.trigger(registration.destination, result))
+	}
 	return result
 }
 router.add("PATCH", "/item/:id", change)

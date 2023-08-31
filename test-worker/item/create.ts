@@ -17,8 +17,12 @@ export async function create(request: http.Request, context: Context): Promise<m
 		result = hooks
 	else if (gracely.Error.is((destinations = await context.destinations)))
 		result = destinations
-	else
+	else {
 		result = item
+		destinations
+			.filter(registration => registration.hook == "item-create")
+			.forEach(registration => hooks.trigger(registration.destination, item))
+	}
 	return result
 }
 router.add("POST", "/item", create)

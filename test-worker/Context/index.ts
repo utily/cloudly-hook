@@ -1,8 +1,8 @@
 import * as gracely from "gracely"
+import * as hook from "cloudly-hook"
 import { http } from "cloudly-http"
 import { Router } from "cloudly-router"
 import { storage } from "cloudly-storage"
-import * as hook from "../../index"
 import { Registration } from "../model"
 import { Environment as ContextEnvironment } from "./Environment"
 
@@ -31,8 +31,9 @@ export class Context {
 			? store.list().then(data => data.map(data => data.value).filter(Registration.is))
 			: Promise.resolve(store)
 	}
-	async listen(listener: Registration): Promise<void> {
-		this.#store?.set(listener.hook, listener)
+	async listen(listener: Registration): Promise<Registration | gracely.Error> {
+		let store: storage.KeyValueStore<Registration> | gracely.Error
+		return gracely.Error.is((store = this.store)) ? store : (store.set(listener.hook, listener), listener)
 	}
 	async authenticate(request: http.Request): Promise<"admin" | undefined> {
 		return this.environment.adminSecret && request.header.authorization == `Basic ${this.environment.adminSecret}`

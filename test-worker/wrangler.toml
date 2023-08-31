@@ -2,7 +2,7 @@ compatibility_date = "2022-11-25"
 name = "worker-template"
 workers_dev = true
 routes = []
-vars = { }
+vars = {}
 main = "./dist/_worker.js"
 
 
@@ -12,7 +12,7 @@ upload.format = "modules"
 
 [env.production]
 workers_dev = false
-vars = {  }
+vars = {}
 durable_objects.bindings = []
 kv_namespaces = []
 r2_buckets = []
@@ -20,8 +20,10 @@ r2_buckets = []
 [env.local]
 workers_dev = true
 vars = { adminSecret = "adminSecret" }
-durable_objects.bindings = []
-kv_namespaces = []
+durable_objects.bindings = [
+	{ name = "hookNamespace", class_name = "HookStorage" },
+]
+kv_namespaces = [{ binding = "destinationNamespace", id = "123abc" }]
 r2_buckets = []
 
 [miniflare]

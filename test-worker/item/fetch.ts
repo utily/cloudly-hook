@@ -17,8 +17,12 @@ export async function fetch(request: http.Request, context: Context): Promise<mo
 		result = hooks
 	else if (gracely.Error.is((destinations = await context.destinations)))
 		result = destinations
-	else
+	else {
 		result = { id, number: id.charCodeAt(0) - "a".charCodeAt(0) }
+		destinations
+			.filter(registration => registration.hook == "item-fetch")
+			.forEach(registration => hooks.trigger(registration.destination, result))
+	}
 	return result
 }
 router.add("GET", "/item/:id", fetch)

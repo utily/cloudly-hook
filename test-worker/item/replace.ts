@@ -21,10 +21,10 @@ export async function replace(request: http.Request, context: Context): Promise<
 	else if (gracely.Error.is((destinations = await context.destinations)))
 		result = destinations
 	else {
+		result = item
 		destinations
 			.filter(registration => registration.hook == "item-replace")
-			.forEach(registration => hooks.trigger(registration.destination, id))
-		result = item
+			.forEach(registration => hooks.trigger(registration.destination, item))
 	}
 	return result
 }

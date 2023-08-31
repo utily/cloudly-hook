@@ -15,8 +15,12 @@ export async function list(request: http.Request, context: Context): Promise<mod
 		result = hooks
 	else if (gracely.Error.is((destinations = await context.destinations)))
 		result = destinations
-	else
+	else {
 		result = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"].map((id, number) => ({ id, number }))
+		destinations
+			.filter(registration => registration.hook == "item-list")
+			.forEach(registration => hooks.trigger(registration.destination, result))
+	}
 	return result
 }
 router.add("GET", "/item", list)
