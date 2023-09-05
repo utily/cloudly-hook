@@ -3,7 +3,7 @@
 // for more details.
 import { nodeResolve } from "@rollup/plugin-node-resolve"
 import commonjs from "@rollup/plugin-commonjs"
-import typescript from "@rollup/plugin-typescript"
+import typescript from "rollup-plugin-typescript2"
 import json from "@rollup/plugin-json"
 import path from "path"
 
@@ -14,7 +14,7 @@ export default {
     format: "es",
     file: "dist/_worker.mjs",
     sourcemap: true,
-		sourcemapPathTransform: relativeSourcePath => path.resolve(__dirname, relativeSourcePath.replace(/^(\.\.\/)+/, "")),
+		sourcemapPathTransform: relativeSourcePath => path.resolve(__dirname, relativeSourcePath.replace(/^(..\/)+/, "")),
   },
   plugins: [commonjs(), nodeResolve({ browser: true }), typescript({ resolveJsonModule: true }), json()],
 	watch: {

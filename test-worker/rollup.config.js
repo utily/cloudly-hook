@@ -1,10 +1,10 @@
-import { terser } from "rollup-plugin-terser"
+// import { terser } from "rollup-plugin-terser"
 // plugin-node-resolve and plugin-commonjs are required for a rollup bundled project
 // to resolve dependencies from node_modules. See the documentation for these plugins
 // for more details.
 import { nodeResolve } from "@rollup/plugin-node-resolve"
 import commonjs from "@rollup/plugin-commonjs"
-import typescript from "@rollup/plugin-typescript"
+import typescript from "rollup-plugin-typescript2"
 import json from "@rollup/plugin-json"
 import path from "path"
 
@@ -15,9 +15,9 @@ export default {
     format: "es",
     file: "dist/_worker.js",
     sourcemap: true,
-		sourcemapPathTransform: relativeSourcePath => path.resolve(__dirname, relativeSourcePath.replace(/^(\.\.\/)+/, "")),
+		sourcemapPathTransform: relativeSourcePath => path.resolve(__dirname, relativeSourcePath.replace(/^(..\/)+/, "")),
   },
-  plugins: [commonjs(), nodeResolve({ browser: true }), terser(), typescript({ resolveJsonModule: true }), json()],
+  plugins: [commonjs(), nodeResolve({ browser: true }), /* terser(), */ typescript({ resolveJsonModule: true }), json()],
 	watch: {
 		clearScreen: false,
 	},
