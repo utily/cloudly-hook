@@ -9,7 +9,6 @@ export class Context {
 	readonly alarm = new storage.DurableObject.Alarm(this.state.storage)
 	private constructor(private readonly state: cloudflare.DurableObjectState) {}
 	async enqueue(event: Types.EventBase): Promise<void> {
-		console.log("Context.enqueue", event)
 		const request: http.Request.Like = {
 			method: "POST",
 			url: event.url,
@@ -55,7 +54,6 @@ export class Context {
 		return new Context(state)
 	}
 	async send(request: http.Request.Like): Promise<boolean> {
-		console.log("Context.send", request)
 		const response = await http.fetch(request)
 		return response.status == 200
 	}

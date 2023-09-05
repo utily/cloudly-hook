@@ -37,7 +37,6 @@ export class Hooks<T extends string> {
 				) ?? [])
 			)
 		}
-		console.log("targets: ", events)
 		await Promise.all(events.map(async event => await this.queue.enqueue(event)))
 	}
 	static open<T extends string>(
