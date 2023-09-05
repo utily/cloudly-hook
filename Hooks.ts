@@ -9,14 +9,17 @@ export class Hooks<T extends string> {
 		readonly queue: Queue,
 		readonly registrations?: storage.KeyValueStore<{ url: string; header?: http.Request.Header }>
 	) {}
-	register(listener: Hooks.Registration<T>): boolean {
+	async register(listener: Hooks.Registration<T>): Promise<boolean> {
 		return (
-			(this.registrations?.set(`${listener.hook}|${new URL(listener.url).hostname}`, {
-				url: listener.url,
-				header: listener.header,
-			}) &&
-				true) ??
-			false
+			this.registrations
+				?.set(`${listener.hook}|${new URL(listener.url).hostname}`, {
+					url: listener.url,
+					header: listener.header,
+				})
+				.then(
+					() => true,
+					() => false
+				) ?? false
 		)
 	}
 	configure(maxRetries: number, timeFactor: number) {
