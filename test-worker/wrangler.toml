@@ -1,28 +1,29 @@
-compatibility_date = "2022-11-25"
+compatibility_date = "2023-05-18"
 name = "worker-template"
 workers_dev = true
 routes = []
 vars = {}
-main = "./dist/_worker.js"
 
+[durable_objects]
+bindings = [{ name = "hookNamespace", class_name = "HookStorage" }]
 
 [build]
 command = "npm install && npm run build"
-upload.format = "modules"
+
+[build.upload]
+format = "modules"
+main = "./_worker.js"
 
 [env.production]
 workers_dev = false
 vars = {}
-durable_objects.bindings = []
 kv_namespaces = []
 r2_buckets = []
 
 [env.local]
 workers_dev = true
 vars = { adminSecret = "adminSecret" }
-durable_objects.bindings = [
-	{ name = "hookNamespace", class_name = "HookStorage" },
-]
+
 kv_namespaces = [{ binding = "destinationNamespace", id = "123abc" }]
 r2_buckets = []
 
