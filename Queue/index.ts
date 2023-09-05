@@ -1,14 +1,12 @@
-import { http } from "cloudly-http"
 import { storage } from "cloudly-storage"
+import { Types } from "../Types"
 import { Storage as QueueStorage } from "./Storage"
 
 export class Queue {
-	#client: storage.DurableObject.Client
-	private constructor(private readonly namespace: storage.DurableObject.Namespace) {
-		this.#client = this.namespace.open()
-	}
-	async enqueue(request: http.Request.Like): Promise<void> {
-		await this.#client.post<Record<string, any>>("/queue", request)
+	private constructor(private readonly namespace: storage.DurableObject.Namespace) {}
+	async enqueue(event: Types.EventBase): Promise<void> {
+		console.log("Queue.enqueue: ", event)
+		await this.namespace.open().post<Types.EventBase>("/queue", event)
 	}
 	static open(namespace: storage.DurableObject.Namespace): Queue {
 		return new Queue(namespace)

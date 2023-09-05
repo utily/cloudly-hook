@@ -6,7 +6,6 @@ import { router } from "../router"
 
 export async function change(request: http.Request, context: Context): Promise<model.Item | gracely.Error> {
 	let result: model.Item | gracely.Error
-	let destinations: gracely.Error | model.Registration[]
 	const hooks = context.hooks
 	const id = request.parameter.id
 	const item = await request.body
@@ -18,13 +17,9 @@ export async function change(request: http.Request, context: Context): Promise<m
 		result = gracely.client.invalidContent("Item", "Body is not a valid item.")
 	else if (gracely.Error.is(hooks))
 		result = hooks
-	else if (gracely.Error.is((destinations = await context.destinations)))
-		result = destinations
 	else {
 		result = { ...item, id }
-		destinations
-			.filter(registration => registration.hook == "item-change")
-			.forEach(registration => hooks.trigger(registration.destination, result))
+		await hooks.trigger("item-replace", result)
 	}
 	return result
 }

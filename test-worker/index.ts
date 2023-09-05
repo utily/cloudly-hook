@@ -11,6 +11,6 @@ export default {
 		return await Context.open(environment).handle(request, router)
 	},
 }
-const Hooks = hook.Hooks
-const HookStorage = hook.HookStorage
-export { Hooks, HookStorage }
+
+export const Hooks = hook.Hooks
+export const HookStorage = hook.HookStorage

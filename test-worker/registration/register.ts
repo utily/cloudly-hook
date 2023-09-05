@@ -4,12 +4,15 @@ import { Context } from "../Context"
 import * as model from "../model"
 import { router } from "../router"
 
-export async function register(request: http.Request, context: Context): Promise<model.Registration | gracely.Error> {
-	let result: model.Registration | gracely.Error
+export async function register(
+	request: http.Request,
+	context: Context
+): Promise<model.Hooks.Registration | gracely.Error> {
+	let result: model.Hooks.Registration | gracely.Error
 	const registration = await request.body
 	if (!request.header.authorization)
 		result = gracely.client.unauthorized()
-	else if (!model.Registration.is(registration) || !validateURL(registration.destination))
+	else if (!model.Hooks.Registration.is(registration))
 		result = gracely.client.invalidContent("Registration", "Body is not a valid registration.")
 	else {
 		result = await context.listen(registration)
@@ -17,14 +20,3 @@ export async function register(request: http.Request, context: Context): Promise
 	return result
 }
 router.add("POST", "/register", register)
-
-function validateURL(destination: string): boolean {
-	let result: boolean
-	try {
-		const url = new URL(destination)
-		result = url.protocol == "https:"
-	} catch (e) {
-		result = false
-	}
-	return result
-}

@@ -6,20 +6,15 @@ import { router } from "../router"
 
 export async function list(request: http.Request, context: Context): Promise<model.Item[] | gracely.Error> {
 	let result: model.Item[] | gracely.Error
-	let destinations: gracely.Error | model.Registration[]
 	const hooks = context.hooks
 	const authorization = request.header.authorization
 	if (!authorization)
 		result = gracely.client.unauthorized()
 	else if (gracely.Error.is(hooks))
 		result = hooks
-	else if (gracely.Error.is((destinations = await context.destinations)))
-		result = destinations
 	else {
 		result = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"].map((id, number) => ({ id, number }))
-		destinations
-			.filter(registration => registration.hook == "item-list")
-			.forEach(registration => hooks.trigger(registration.destination, result))
+		await hooks.trigger("item-list", result)
 	}
 	return result
 }
