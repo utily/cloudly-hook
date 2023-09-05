@@ -15,8 +15,8 @@ export class Context {
 			body: { hook: event.hook, event: event.body },
 			header: { ...event.header, contentType: "application/json" },
 		}
-		const maxRetries = event.options?.maxRetries ?? 5
-		const timeFactor = event.options?.timeFactor ?? 1
+		const maxRetries = event.options?.maxRetries ?? Types.EventBase.defaultOptions.maxRetries
+		const timeFactor = event.options?.timeFactor ?? Types.EventBase.defaultOptions.timeFactor
 		this.tryEnqueue(request, maxRetries, timeFactor)
 	}
 	private async tryEnqueue(
@@ -55,6 +55,6 @@ export class Context {
 	}
 	async send(request: http.Request.Like): Promise<boolean> {
 		const response = await http.fetch(request)
-		return response.status == 200
+		return response.status >= 200 && response.status < 300
 	}
 }

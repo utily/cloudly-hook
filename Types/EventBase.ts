@@ -9,6 +9,7 @@ export interface EventBase<T extends string = string> extends Registration<T> {
 export namespace EventBase {
 	export type Body = string | number | boolean | { [key: string]: Body } | Body[]
 	export type Options = { maxRetries: number; timeFactor: number }
+	export const defaultOptions = { maxRetries: 5, timeFactor: 5 }
 	export const type = Registration.type.extend<EventBase>({
 		body: isly.any(),
 		options: isly

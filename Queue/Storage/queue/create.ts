@@ -8,7 +8,7 @@ export async function create(request: http.Request, context: Context): Promise<h
 	let result: gracely.Error | Types.EventBase
 	const event = await request.body
 	if (!Types.EventBase.is(event)) {
-		result = gracely.client.invalidContent("Event", "Body is not a valid event")
+		result = gracely.client.flawedContent(Types.EventBase.type.flaw(event))
 	} else {
 		await context.enqueue(event)
 		result = event
