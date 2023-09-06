@@ -4,7 +4,7 @@ import { Queue } from "./Queue"
 import { Types } from "./Types"
 
 export class Hooks<T extends string> {
-	#options?: Hooks.Options
+	#options: Hooks.Options = Types.EventBase.defaultOptions
 	private constructor(
 		readonly queue: Queue,
 		readonly registrations?: storage.KeyValueStore<{ url: string; header?: http.Request.Header }>
@@ -22,8 +22,10 @@ export class Hooks<T extends string> {
 				) ?? false
 		)
 	}
-	configure(maxRetries: number, timeFactor: number) {
-		this.#options = { maxRetries, timeFactor }
+	configure(options: { maxRetries?: number; timeFactor?: number }): Hooks<T> {
+		options.maxRetries && (this.#options.maxRetries = options.maxRetries)
+		options.timeFactor && (this.#options.timeFactor = options.timeFactor)
+		return this
 	}
 	async trigger(hook: T, body: any, destinations?: string[]): Promise<void> {
 		const options = this.#options

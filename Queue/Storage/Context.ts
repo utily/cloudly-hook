@@ -14,9 +14,7 @@ export class Context {
 			body: { hook: event.hook, event: event.body },
 			header: { contentType: "application/json", ...event.header },
 		}
-		const maxRetries = event.options?.maxRetries ?? Types.EventBase.defaultOptions.maxRetries
-		const timeFactor = event.options?.timeFactor ?? Types.EventBase.defaultOptions.timeFactor
-		this.tryEnqueue(request, maxRetries, timeFactor)
+		this.tryEnqueue(request, event.options.maxRetries, event.options.timeFactor)
 	}
 	private async tryEnqueue(
 		request: http.Request.Like,

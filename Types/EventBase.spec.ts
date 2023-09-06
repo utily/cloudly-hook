@@ -16,6 +16,7 @@ describe("EventBase", () => {
 				hook: "test",
 				url: "https://www.example.com",
 				body: { test: 1 },
+				options: { maxRetries: 5, timeFactor: 5 },
 			})
 		).toBe(true)
 	})
@@ -25,6 +26,7 @@ describe("EventBase", () => {
 				hook: "test",
 				url: "http://www.example.com",
 				body: { test: 1 },
+				options: { maxRetries: 5, timeFactor: 5 },
 			})
 		).toBe(false)
 		expect(
@@ -32,6 +34,7 @@ describe("EventBase", () => {
 				hook: "test",
 				url: "https://www.example.com",
 				body: { test: "1" },
+				options: { maxRetries: 5, timeFactor: 5 },
 			})
 		).toBe(false)
 		expect(
@@ -39,6 +42,7 @@ describe("EventBase", () => {
 				hook: "test",
 				url: "https://www.example.com",
 				buddy: { test: 1 },
+				options: { maxRetries: 5, timeFactor: 5 },
 			})
 		).toBe(false)
 	})

@@ -3,7 +3,7 @@ import { Registration } from "./Registration"
 
 export interface EventBase<T extends string = string> extends Registration<T> {
 	body: EventBase.Body
-	options?: EventBase.Options
+	options: EventBase.Options
 }
 
 export namespace EventBase {
@@ -12,9 +12,7 @@ export namespace EventBase {
 	export const defaultOptions = { maxRetries: 5, timeFactor: 5 }
 	export const type = Registration.type.extend<EventBase>({
 		body: isly.any(),
-		options: isly
-			.object<Extract<EventBase, "options">>({ maxRetries: isly.number(), timeFactor: isly.number() })
-			.optional(),
+		options: isly.object<Extract<EventBase, "options">>({ maxRetries: isly.number(), timeFactor: isly.number() }),
 	})
 	export const is = type.is
 }
