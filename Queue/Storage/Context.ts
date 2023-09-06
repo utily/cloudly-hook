@@ -1,4 +1,3 @@
-import { gracely } from "gracely"
 import * as isoly from "isoly"
 import * as cloudflare from "@cloudflare/workers-types"
 import { http } from "cloudly-http"
@@ -13,7 +12,7 @@ export class Context {
 			method: "POST",
 			url: event.url,
 			body: { hook: event.hook, event: event.body },
-			header: { ...event.header, contentType: "application/json" },
+			header: { contentType: "application/json", ...event.header },
 		}
 		const maxRetries = event.options?.maxRetries ?? Types.EventBase.defaultOptions.maxRetries
 		const timeFactor = event.options?.timeFactor ?? Types.EventBase.defaultOptions.timeFactor
@@ -25,7 +24,7 @@ export class Context {
 		timeFactor: number,
 		retries = 0
 	): Promise<void> {
-		if (gracely.Error.is(await this.send(request))) {
+		if (await this.send(request)) {
 			await this.state.storage.put(`hook`, { request, retries, maxRetries, timeFactor })
 			await this.alarm.set(
 				"dequeue",
@@ -46,15 +45,15 @@ export class Context {
 		) {
 			const result = await this.send(data.request)
 			await this.state.storage.delete(`hook`)
-			if (gracely.Error.is(result) && data.retries < data.maxRetries)
+			if (result && data.retries < data.maxRetries)
 				this.tryEnqueue(data.request, data.maxRetries, data.timeFactor, ++data.retries)
 		}
-	}
-	static open(state: cloudflare.DurableObjectState): Context {
-		return new Context(state)
 	}
 	async send(request: http.Request.Like): Promise<boolean> {
 		const response = await http.fetch(request)
 		return response.status >= 200 && response.status < 300
+	}
+	static open(state: cloudflare.DurableObjectState): Context {
+		return new Context(state)
 	}
 }
