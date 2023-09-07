@@ -13,8 +13,8 @@ export class Storage {
 		return http.Response.to(await router.handle(http.Request.from(request), this.context))
 	}
 	async alarm(): Promise<void> {
-		this.context.alarm.register("dequeue", async () => {
-			this.context.dequeue()
+		this.context.alarm.register("retry", async () => {
+			this.context.retry()
 		})
 		await this.context.alarm.handle()
 	}

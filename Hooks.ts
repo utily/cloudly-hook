@@ -7,8 +7,11 @@ export class Hooks<T extends string> {
 	#options: Hooks.Options = Types.EventBase.defaultOptions
 	private constructor(
 		readonly queue: Queue,
-		readonly registrations?: storage.KeyValueStore<{ url: string; header?: http.Request.Header }>
-	) {}
+		readonly registrations?: storage.KeyValueStore<{ url: string; header?: http.Request.Header }>,
+		options?: Partial<Hooks.Options>
+	) {
+		options && this.configure(options)
+	}
 	async register(listener: Hooks.Registration<T>): Promise<boolean> {
 		return (
 			this.registrations
@@ -22,7 +25,7 @@ export class Hooks<T extends string> {
 				) ?? false
 		)
 	}
-	configure(options: { maxRetries?: number; timeFactor?: number }): Hooks<T> {
+	configure(options: Partial<Hooks.Options>): Hooks<T> {
 		options.maxRetries && (this.#options.maxRetries = options.maxRetries)
 		options.timeFactor && (this.#options.timeFactor = options.timeFactor)
 		return this
@@ -31,21 +34,22 @@ export class Hooks<T extends string> {
 		const options = this.#options
 		const events: Hooks.Event<T>[] = []
 		if (destinations)
-			events.push(...destinations.map(d => ({ hook, url: d, body, options })))
+			events.push(...destinations.map(d => ({ hook, url: d, body, options, retries: 0, index: 0 })))
 		else {
 			events.push(
 				...((await this.registrations?.list())?.flatMap(r =>
-					r.key.split("|")[0] == hook && r.value ? [{ ...r.value, body, hook, options }] : []
+					r.key.split("|")[0] == hook && r.value ? [{ ...r.value, body, hook, options, retries: 0, index: 0 }] : []
 				) ?? [])
 			)
 		}
-		await Promise.all(events.map(async event => await this.queue.enqueue(event)))
+		events.length > 0 && (await this.queue.enqueue(events))
 	}
 	static open<T extends string>(
 		queueStorage: storage.DurableObject.Namespace,
-		hookStorage?: storage.KeyValueStore
+		hookStorage?: storage.KeyValueStore,
+		options?: Partial<Hooks.Options>
 	): Hooks<T> {
-		return new Hooks<T>(Queue.open(queueStorage), hookStorage)
+		return new Hooks<T>(Queue.open(queueStorage), hookStorage, options)
 	}
 }
 

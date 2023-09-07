@@ -6,52 +6,37 @@ import { Types } from "../../Types"
 
 export class Context {
 	readonly alarm = new storage.DurableObject.Alarm(this.state.storage)
-	private constructor(private readonly state: cloudflare.DurableObjectState) {}
-	async enqueue(event: Types.EventBase): Promise<void> {
-		const request: http.Request.Like = {
-			method: "POST",
-			url: event.url,
-			body: { hook: event.hook, event: event.body },
-			header: { contentType: "application/json", ...event.header },
-		}
-		this.tryEnqueue(request, event.options.maxRetries, event.options.timeFactor)
+	private nextAlarm: number | undefined
+	private readonly epochNow: number
+	private constructor(private readonly state: cloudflare.DurableObjectState, private readonly now: isoly.DateTime) {
+		this.epochNow = isoly.DateTime.epoch(this.now)
 	}
-	private async tryEnqueue(
-		request: http.Request.Like,
-		maxRetries: number,
-		timeFactor: number,
-		retries = 0
-	): Promise<void> {
-		if (await this.send(request)) {
-			await this.state.storage.put(`hook`, { request, retries, maxRetries, timeFactor })
-			await this.alarm.set(
-				"dequeue",
-				isoly.DateTime.epoch(isoly.DateTime.nextSecond(isoly.DateTime.now(), timeFactor * retries), "milliseconds")
+
+	async trigger(events: Types.EventBase[]): Promise<void> {
+		await Promise.all(events.map(event => this.sendOrSnooze(event)))
+		typeof this.nextAlarm == "number" && (await this.alarm.set("retry", this.nextAlarm), (this.nextAlarm = undefined))
+	}
+	private async sendOrSnooze(event: Types.EventBase): Promise<void> {
+		if (event.retries < event.options.maxRetries && !(await this.send(event))) {
+			event.alarm = isoly.DateTime.epoch(
+				isoly.DateTime.nextSecond(this.now, event.options.timeFactor * event.retries),
+				"milliseconds"
 			)
-		}
+			await this.state.storage.put(`hook|${event.index}`, { ...event, retries: ++event.retries })
+			this.nextAlarm = this.nextAlarm && this.nextAlarm <= event.alarm ? this.nextAlarm : event.alarm
+		} else
+			await this.state.storage.delete(`hook|${event.index}`)
 	}
-	async dequeue(): Promise<void> {
-		let data: { request: http.Request.Like; maxRetries: number; timeFactor: number; retries: number } | undefined
-		if (
-			(data = await this.state.storage.get<{
-				request: http.Request.Like
-				retries: number
-				maxRetries: number
-				timeFactor: number
-			}>(`hook`)) &&
-			data.request
-		) {
-			const result = await this.send(data.request)
-			await this.state.storage.delete(`hook`)
-			if (result && data.retries < data.maxRetries)
-				this.tryEnqueue(data.request, data.maxRetries, data.timeFactor, ++data.retries)
-		}
+	async retry(): Promise<void> {
+		await this.trigger([...(await this.state.storage.list<Types.EventBase>({ prefix: `hook|` })).values()])
 	}
-	async send(request: http.Request.Like): Promise<boolean> {
-		const response = await http.fetch(request)
-		return response.status >= 200 && response.status < 300
+	async send(event: Types.EventBase): Promise<boolean> {
+		return (
+			(!event.alarm || event.alarm <= this.epochNow) &&
+			(await http.fetch(Types.EventBase.toRequest(event)).then(r => r.status >= 200 && r.status < 300))
+		)
 	}
 	static open(state: cloudflare.DurableObjectState): Context {
-		return new Context(state)
+		return new Context(state, isoly.DateTime.now())
 	}
 }

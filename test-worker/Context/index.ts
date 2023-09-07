@@ -24,7 +24,7 @@ export class Context {
 		let hooks: Context.Hooks | gracely.Error
 		return gracely.Error.is((hooks = this.hooks))
 			? hooks
-			: hooks.register(listener)
+			: (await hooks.register(listener))
 			? listener
 			: gracely.server.unavailable("Unable to register listener.")
 	}

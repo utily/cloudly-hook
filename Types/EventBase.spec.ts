@@ -1,4 +1,3 @@
-import { http } from "cloudly-http"
 import { isly } from "isly"
 import { EventBase } from "./EventBase"
 
@@ -17,6 +16,8 @@ describe("EventBase", () => {
 				url: "https://www.example.com",
 				body: { test: 1 },
 				options: { maxRetries: 5, timeFactor: 5 },
+				retries: 0,
+				index: 0,
 			})
 		).toBe(true)
 	})
@@ -27,6 +28,8 @@ describe("EventBase", () => {
 				url: "http://www.example.com",
 				body: { test: 1 },
 				options: { maxRetries: 5, timeFactor: 5 },
+				retries: 0,
+				index: 0,
 			})
 		).toBe(false)
 		expect(
@@ -35,6 +38,8 @@ describe("EventBase", () => {
 				url: "https://www.example.com",
 				body: { test: "1" },
 				options: { maxRetries: 5, timeFactor: 5 },
+				retries: 0,
+				index: 0,
 			})
 		).toBe(false)
 		expect(
@@ -43,6 +48,8 @@ describe("EventBase", () => {
 				url: "https://www.example.com",
 				buddy: { test: 1 },
 				options: { maxRetries: 5, timeFactor: 5 },
+				retries: 0,
+				index: 0,
 			})
 		).toBe(false)
 	})

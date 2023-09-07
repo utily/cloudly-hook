@@ -4,14 +4,14 @@ import { Types } from "../../../Types"
 import { Context } from "../Context"
 import { router } from "../router"
 
-export async function create(request: http.Request, context: Context): Promise<http.Response.Like | any> {
-	let result: gracely.Error | Types.EventBase
-	const event = await request.body
-	if (!Types.EventBase.is(event)) {
-		result = gracely.client.flawedContent(Types.EventBase.type.flaw(event))
+export async function create(request: http.Request, context: Context): Promise<gracely.Error | Types.EventBase[]> {
+	let result: gracely.Error | Types.EventBase[]
+	const events = await request.body
+	if (!Array.isArray(events) || events.some(event => !Types.EventBase.is(event))) {
+		result = gracely.client.flawedContent(Types.EventBase.type.array().flaw(events))
 	} else {
-		await context.enqueue(event)
-		result = event
+		await context.trigger((events as Types.EventBase[]).map((e, index) => ({ ...e, index })))
+		result = events
 	}
 	return result
 }
