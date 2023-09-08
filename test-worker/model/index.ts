@@ -1,2 +1,2 @@
 export { Item } from "./Item"
-export { Registration } from "./Registration"
+export { Hooks } from "./Hooks"

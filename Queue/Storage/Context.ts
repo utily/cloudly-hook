@@ -1,46 +1,42 @@
-import { gracely } from "gracely"
 import * as isoly from "isoly"
 import * as cloudflare from "@cloudflare/workers-types"
 import { http } from "cloudly-http"
+import { storage } from "cloudly-storage"
+import { Types } from "../../Types"
 
 export class Context {
-	private constructor(
-		private readonly state: cloudflare.DurableObjectState,
-		private readonly maxRetries = 5,
-		private readonly timeFactor = 1
-	) {}
-	async enqueue(request: http.Request.Like): Promise<void> {
-		this.tryEnqueue(request)
+	readonly alarm = new storage.DurableObject.Alarm(this.state.storage)
+	private nextAlarm: number | undefined
+	private readonly epochNow: number
+	private constructor(private readonly state: cloudflare.DurableObjectState, private readonly now: isoly.DateTime) {
+		this.epochNow = isoly.DateTime.epoch(this.now)
 	}
-	private async tryEnqueue(request: http.Request.Like, retries = 0): Promise<void> {
-		await this.state.storage.put(`hook`, { request: request, retries: retries })
-		this.state.waitUntil(
-			this.state.storage.setAlarm(
-				isoly.DateTime.epoch(isoly.DateTime.nextSecond(isoly.DateTime.now(), this.timeFactor * retries), "milliseconds")
+
+	async trigger(events: Types.EventBase[]): Promise<void> {
+		await Promise.all(events.map(event => this.sendOrSnooze(event)))
+		typeof this.nextAlarm == "number" && (await this.alarm.set("retry", this.nextAlarm), (this.nextAlarm = undefined))
+	}
+	private async sendOrSnooze(event: Types.EventBase): Promise<void> {
+		if (event.retries < event.options.maxRetries && !(await this.send(event))) {
+			event.alarm = isoly.DateTime.epoch(
+				isoly.DateTime.nextSecond(this.now, event.options.timeFactor * event.retries),
+				"milliseconds"
 			)
+			await this.state.storage.put(`hook|${event.index}`, { ...event, retries: ++event.retries })
+			this.nextAlarm = this.nextAlarm && this.nextAlarm <= event.alarm ? this.nextAlarm : event.alarm
+		} else
+			await this.state.storage.delete(`hook|${event.index}`)
+	}
+	async retry(): Promise<void> {
+		await this.trigger([...(await this.state.storage.list<Types.EventBase>({ prefix: `hook|` })).values()])
+	}
+	async send(event: Types.EventBase): Promise<boolean> {
+		return (
+			(!event.alarm || event.alarm <= this.epochNow) &&
+			(await http.fetch(Types.EventBase.toRequest(event)).then(r => r.status >= 200 && r.status < 300))
 		)
 	}
-	async dequeue(): Promise<http.Response | gracely.Error> {
-		let result: http.Response | gracely.Error
-		let data: { request: http.Request.Like; retries: number } | undefined
-		if (
-			!(data = await this.state.storage.get<{ request: http.Request.Like; retries: number }>(`hook`)) ||
-			!data.request
-		)
-			result = gracely.server.databaseFailure("item not found")
-		else {
-			result = await this.send(data.request)
-			await this.state.storage.delete(`hook`)
-			if (gracely.Error.is(result) && data.retries < this.maxRetries)
-				this.tryEnqueue(data.request, ++data.retries)
-		}
-		return result
-	}
-	static open(state: cloudflare.DurableObjectState, maxRetries?: number, timeFactor?: number): Context {
-		return new Context(state, maxRetries, timeFactor)
-	}
-	async send(request: http.Request.Like): Promise<http.Response | gracely.Error> {
-		const response = await http.fetch(request)
-		return gracely.Error.is(response.body) ? response.body : response
+	static open(state: cloudflare.DurableObjectState): Context {
+		return new Context(state, isoly.DateTime.now())
 	}
 }

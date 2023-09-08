@@ -1,16 +1,21 @@
 {
-  "compilerOptions": {
-    "outDir": "./dist",
-    "module": "es2015",
-    "target": "es2019",
-    "lib": ["es2019"],
-    "alwaysStrict": true,
-    "strict": true,
-    "preserveConstEnums": true,
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "esModuleInterop": true,
-    "types": ["@cloudflare/workers-types", "node"],
+	"compilerOptions": {
+		"outDir": "./dist",
+		"module": "es2015",
+		"target": "es2019",
+		"lib": [
+			"es2019"
+		],
+		"alwaysStrict": true,
+		"strict": true,
+		"preserveConstEnums": true,
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"esModuleInterop": true,
+		"types": [
+			"@cloudflare/workers-types",
+			"node"
+		],
 		"resolveJsonModule": true,
 		"noImplicitAny": true,
 		"removeComments": true,
@@ -18,11 +23,16 @@
 		"noImplicitThis": true,
 		"strictNullChecks": true,
 		"allowJs": true
-  },
-  "include": [
-    "*.ts",
-    "**/*.ts",
-    "./node_modules/@cloudflare/workers-types/index.d.ts"
-  ],
-  "exclude": ["*.spec.ts", "**/*.spec.ts", "node_modules/", "dist/"]
+	},
+	"include": [
+		"*.ts",
+		"**/*.ts",
+		"./node_modules/@cloudflare/workers-types/index.d.ts"
+	],
+	"exclude": [
+		"*.spec.ts",
+		"**/*.spec.ts",
+		"node_modules/",
+		"dist/"
+	]
 }
