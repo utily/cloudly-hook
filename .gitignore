@@ -4,3 +4,4 @@ dist
 .npmrc
 .ncurc
 .miniflare
+.wrangler
