@@ -1,10 +1,11 @@
-import * as hook from "cloudly-hook"
+import { hook } from "cloudly-hook"
 import { Context } from "./Context"
 import { router } from "./router"
 
 import "./item"
 import "./version"
 import "./registration"
+import "./event"
 
 export default {
 	async fetch(request: Request, environment: Context.Environment) {

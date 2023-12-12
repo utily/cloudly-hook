@@ -27,7 +27,12 @@ vars = { adminSecret = "adminSecret" }
 kv_namespaces = [{ binding = "destinationNamespace", id = "123abc" }]
 r2_buckets = []
 
+[dev]
+host = "example.com"
+
+port = 8787
+
 [miniflare]
 durable_objects_persist = "./.miniflare/durable-objects/"
 kv_persist = "./.miniflare/kv/"
-port = 8788
+port = 8787
