@@ -29,7 +29,7 @@
 			"^.+\\.(j|t)sx?$": "ts-jest"
 		},
 		"transformIgnorePatterns": [
-			"<rootDir>/node_modules/(?!(cryptly|authly|isly|isoly|gracely|cloudly-http|cloudly-router|cloudly-storage)/.*)"
+			"<rootDir>/node_modules/(?!(cryptly|authly|isly|isoly|gracely|cloudly-http|cloudly-router|@cloudflare/workers-types|cloudly-storage)/.*)"
 		],
 		"testEnvironment": "node",
 		"testRegex": "((\\.|/)(test|spec))(\\.|\\/.+)(jsx?|tsx?)$",
