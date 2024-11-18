@@ -74,7 +74,7 @@
 	"dependencies": {
 		"cloudly-http": "^0.1.7",
 		"cloudly-router": "^0.1.1",
-		"cloudly-storage": "^0.10.14",
+		"cloudly-storage": "^0.10.15",
 		"gracely": "^2.0.8",
 		"isly": "^0.1.20",
 		"isoly": "^2.3.11"
