@@ -14,6 +14,7 @@ export class Hooks<T extends string> {
 	}
 	async register(listener: Hooks.Registration<T>): Promise<boolean> {
 		return (
+			// TODO: make key unique
 			this.registrations
 				?.set(`${listener.hook}|${new URL(listener.url).hostname}`, {
 					url: listener.url,
