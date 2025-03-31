@@ -1,18 +1,12 @@
 compatibility_date = "2023-05-18"
 name = "worker-template"
 workers_dev = true
+main = "./index.ts"
 routes = []
 vars = {}
 
 [durable_objects]
 bindings = [{ name = "hookNamespace", class_name = "HookStorage" }]
-
-[build]
-command = "npm install && npm run build"
-
-[build.upload]
-format = "modules"
-main = "./_worker.js"
 
 [env.production]
 workers_dev = false
@@ -29,10 +23,4 @@ r2_buckets = []
 
 [dev]
 host = "example.com"
-
-port = 8787
-
-[miniflare]
-durable_objects_persist = "./.miniflare/durable-objects/"
-kv_persist = "./.miniflare/kv/"
 port = 8787
