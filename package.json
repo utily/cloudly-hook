@@ -77,6 +77,6 @@
 		"cloudly-storage": "^0.10.22",
 		"gracely": "^2.0.8",
 		"isly": "^0.1.20",
-		"isoly": "^3.0.6"
+		"isoly": "3.0.6"
 	}
 }
