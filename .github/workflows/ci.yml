@@ -2,7 +2,9 @@ name: CI
 
 on:
   pull_request:
-  
+
+env:
+  NPM_CONFIG_ALLOW_GIT: all
 jobs:
   build:
     name: Build

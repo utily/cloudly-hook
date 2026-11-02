@@ -1,4 +1,4 @@
-import * as isoly from "isoly"
+import { isoly } from "isoly"
 import * as cloudflare from "@cloudflare/workers-types"
 import { http } from "cloudly-http"
 import { storage } from "cloudly-storage"

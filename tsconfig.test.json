@@ -15,6 +15,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"noImplicitThis": true,
 		"strictNullChecks": true,
+		"skipLibCheck": true,
 		"sourceMap": true,
 		"outDir": "dist",
 		"moduleResolution": "node",
@@ -22,7 +23,8 @@
 		"paths": {
 			"*": [
 				"types/*"
-			]
+			],
+			"cloudly-storage": ["./node_modules/cloudly-storage/dist/mjs/index.d.ts"]
 		},
 		"types": [
 			"jest",
