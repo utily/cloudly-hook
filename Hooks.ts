@@ -53,7 +53,6 @@ export class Hooks<T extends string> {
 		return new Hooks<T>(Queue.open(queueStorage), hookStorage, options)
 	}
 }
-
 export namespace Hooks {
 	export const Storage = Queue.Storage
 	export type Registration<T extends string> = Types.Registration<T>
