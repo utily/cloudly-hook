@@ -9,7 +9,6 @@ export interface EventBase<T extends string = string> extends Registration<T> {
 	alarm?: number
 	index: number
 }
-
 export namespace EventBase {
 	export type Body = string | number | boolean | { [key: string]: Body } | Body[]
 	export type Options = { maxRetries: number; timeFactor: number }
